@@ -28,7 +28,7 @@ def win_multiplier():
     multiplier = 10 + current_position
 
     # after lights out, divide by 4
-    if ir.session_status() == LIGHTS_OUT:
+    if ir.session_status() >= LIGHTS_OUT:
         multiplier /= 4.0
 
     # value decreases throughout the race

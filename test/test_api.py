@@ -20,13 +20,23 @@ class MyTestCase(unittest.TestCase):
     def tearDownClass(cls):
         cls.app = None
 
-    @patch('application.api.iracing_client.car_position', return_value=9)
+    @patch('application.api.iracing_client.car_position', return_value=3)
     @patch('application.api.iracing_client.session_status', return_value=GRID)
-    @patch('application.api.api_routes.decrease_multiplier', return_value=None)
-    def test_win_multiplier(self, mock_car_position, mock_session_status, mock_decrease_multiplier):
-        response = self.app.get('/api/v1/multipliers/win')
-        value = json.loads(response.data)
-        self.assertEqual(value['multiplier'], 7)
+    @patch('application.api.api_routes.decrease_multiplier')
+    def test_win_multiplier_grid(self, mock_car_position, mock_session_status, mock_decrease_multiplier):
+        response_body = self.app.get('/api/v1/multipliers/win').data
+        value = json.loads(response_body)['multiplier']
+
+        self.assertEqual(value, 13)
+
+    @patch('application.api.iracing_client.car_position', return_value=5)
+    @patch('application.api.iracing_client.session_status', return_value=LIGHTS_OUT)
+    @patch('application.api.api_routes.decrease_multiplier')
+    def test_win_multiplier_lights_out(self, mock_car_position, mock_session_status, mock_decrease_multiplier):
+        response_body = self.app.get('/api/v1/multipliers/win').data
+        value = json.loads(response_body)['multiplier']
+
+        self.assertEqual(value, 3.75)
 
 
 if __name__ == '__main__':
