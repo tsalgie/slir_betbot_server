@@ -1,8 +1,6 @@
 class Config:
     """Set Flask configuration vars."""
-
-    # General Config
-    IRACING_USER = 'Complx'
+    pass
 
 
 class ProdConfig(Config):
