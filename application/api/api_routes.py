@@ -22,10 +22,11 @@ def decrease_multiplier(multiplier, multiplier_floor):
 
 @api.route('/multipliers/win', methods=['GET'])
 def win_multiplier():
+    """Starts at 10x, increases by 1x each position behind 1st place."""
     multiplier_floor = 1.15
     current_position = ir.car_position()
 
-    multiplier = 10 + current_position
+    multiplier = 9 + current_position
 
     # after lights out, divide by 4
     if ir.session_status() >= LIGHTS_OUT:
@@ -40,23 +41,27 @@ def win_multiplier():
 
 @api.route('/multipliers/top5', methods=['GET'])
 def top5_multiplier():
+    """Starts at 5x, increases by 0.5x each position behind 5th place,
+    and decreases by 0.5x each position ahead of 5th place."""
     multiplier_floor = 1.15
     current_position = ir.car_position()
 
-    multiplier = 5 + ((current_position - 4) / 2)
+    multiplier = 5 + ((current_position - 5) / 2)
 
     # after green light, divide by 3
-    if ir.session_status() == LIGHTS_OUT:
+    if ir.session_status() >= LIGHTS_OUT:
         multiplier /= 3.0
 
     # value decreases throughout the race
     decrease_multiplier(multiplier, multiplier_floor)
 
-    return multiplier
+    result = {'multiplier': multiplier}
+    return jsonify(result)
 
 
 @api.route('/multipliers/finish', methods=['GET'])
 def finish_multiplier():
+    """Starts at 1.5x in the middle of the grid, increases to linearly to 2x for 1st and last place."""
     multiplier_floor = 1.15
     current_position = ir.car_position()
     grid_size = ir.field_size()
@@ -70,11 +75,16 @@ def finish_multiplier():
     # value decreases throughout the race
     decrease_multiplier(multiplier, multiplier_floor)
 
-    return multiplier
+    if multiplier < multiplier_floor:
+        multiplier = multiplier_floor
+
+    result = {'multiplier': multiplier}
+    return jsonify(result)
 
 
 @api.route('/multipliers/crash', methods=['GET'])
 def crash_multiplier():
+    """Starts at 2x in the middle of the grid, increases to linearly to 4x for 1st and last place."""
     multiplier_floor = 1.15
     current_position = ir.car_position()
     grid_size = ir.field_size()
@@ -88,4 +98,5 @@ def crash_multiplier():
     # value decreases throughout the race
     decrease_multiplier(multiplier, multiplier_floor)
 
-    return multiplier
+    result = {'multiplier': multiplier}
+    return jsonify(result)
