@@ -9,16 +9,22 @@ CRASHED = 3
 
 
 def irsdk():
-    app.config['IR']
+    return app.config['IR']
 
 
 def field_size():
-    pass
+    pace_car_id = irsdk()['DriverInfo']['PaceCarIdx']
+    return int(pace_car_id)
 
 
-def car_position():
-    #standings().index(app.config['IRACING_USER'])  # 0 indexed
-    pass
+def car_id():
+    return irsdk()['DriverInfo']['DriverCarIdx']
+
+
+def car_position():  # 1 indexed
+    positions = irsdk()['SessionInfo']['Sessions'][1]['ResultsPositions']
+    driver_info = list(filter(lambda p: p['CarIdx'] == car_id(), positions))[0]
+    return driver_info['Position']
 
 
 def car_status():
@@ -42,12 +48,19 @@ def session_status():
 
 
 def timed_race():
-    pass
+    return irsdk()['SessionInfo']['Sessions'][1]['SessionLaps'] == 'unlimited'
 
 
 def total_race_laps():
-    pass
+    return irsdk()['SessionInfo']['Sessions'][1]['SessionLaps']
 
 
 def total_race_time():
-    pass
+    seconds_string = irsdk()['SessionInfo']['Sessions'][1]['SessionTime'][:-4]
+    return float(seconds_string)
+
+
+
+import irsdk
+ir = irsdk.IRSDK()
+ir.startup(test_file='test_races\\another_after_green.bin')
