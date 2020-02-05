@@ -4,7 +4,7 @@ import irsdk
 
 def create_app(config='config.ProdConfig'):
     """Initialize the core application."""
-    app = Flask(__name__, instance_relative_config=False)
+    app = Flask(__name__, instance_relative_config=False, static_folder=None)
     app.config.from_object(config)
 
     with app.app_context():
@@ -15,7 +15,7 @@ def create_app(config='config.ProdConfig'):
         app.register_blueprint(charts_routes.charts)
 
         ir = irsdk.IRSDK()
-        ir.startup(test_file='./before_green.bin')
+        ir.startup()#test_file='./before_green.bin')
 
         app.config['IR'] = ir
 

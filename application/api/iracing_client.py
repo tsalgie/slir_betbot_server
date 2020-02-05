@@ -28,19 +28,24 @@ def car_position():  # 1 indexed
 
 
 def car_status():
+    """Has the car crashed or not?"""
     pass
 
 
 def elapsed_laps():
-    pass
+    return irsdk()['SessionInfo']['Sessions'][1]['ResultsLapsComplete']
 
 
+# Don't know if this works yet,
+# Description for SessionTime and SessionTimeRemain appears to be incorrect when exported
 def elapsed_seconds():
-    pass
+    average_lap = float(irsdk()['SessionInfo']['Sessions'][1]['ResultsLapsComplete'])
+    laps_complete = int(irsdk()['SessionInfo']['Sessions'][1]['ResultsLapsComplete'])
+    return average_lap * laps_complete
 
 
 def session():
-    pass
+    return ir['SessionInfo']['Sessions'][1]['SessionName']
 
 
 def session_status():
@@ -58,7 +63,6 @@ def total_race_laps():
 def total_race_time():
     seconds_string = irsdk()['SessionInfo']['Sessions'][1]['SessionTime'][:-4]
     return float(seconds_string)
-
 
 
 import irsdk

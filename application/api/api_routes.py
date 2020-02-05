@@ -5,7 +5,6 @@ from .iracing_client import GRID, LIGHTS_OUT, FINISHED, SESSION_DONE, CRASHED
 
 
 api = Blueprint('api_bp', __name__,
-                template_folder='templates',
                 url_prefix='/api/v1')
 
 
@@ -23,6 +22,7 @@ def decrease_multiplier(multiplier, multiplier_floor):
 @api.route('/multipliers/win', methods=['GET'])
 def win_multiplier():
     """Starts at 10x, increases by 1x each position behind 1st place."""
+    '''
     multiplier_floor = 1.15
     current_position = ir.car_position()
 
@@ -37,12 +37,16 @@ def win_multiplier():
 
     result = {'multiplier': multiplier}
     return jsonify(result)
+    '''
+    import random
+    return jsonify({'multiplier': random.randint(1, 100)})
 
 
 @api.route('/multipliers/top5', methods=['GET'])
 def top5_multiplier():
     """Starts at 5x, increases by 0.5x each position behind 5th place,
     and decreases by 0.5x each position ahead of 5th place."""
+    '''
     multiplier_floor = 1.15
     current_position = ir.car_position()
 
@@ -57,6 +61,10 @@ def top5_multiplier():
 
     result = {'multiplier': multiplier}
     return jsonify(result)
+    '''
+    import random
+    result = {'multiplier': random.randint(1, 100)}
+    return jsonify(result)
 
 
 @api.route('/multipliers/finish', methods=['GET'])
@@ -65,6 +73,12 @@ def finish_multiplier():
     multiplier_floor = 1.15
     current_position = ir.car_position()
     grid_size = ir.field_size()
+
+    mid_positions = grid_size/2
+    if grid_size % 2 == 1:
+        mid_positions = [mid_positions + 0.5]
+    else:
+        mid_positions = [mid_positions, mid_positions+1]
 
     multiplier = 1.5 + (abs(current_position-grid_size/2) / grid_size)  # between 1.5 and 2 depending on distance from med pos
 
